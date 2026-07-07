@@ -13,6 +13,9 @@ int counter = 0;
 // Mutex Lock
 pthread_mutex_t mutex;
 
+pthread_mutex_t resource1;
+pthread_mutex_t resource2;
+
 // Semaphore
 sem_t semaphore;
 
@@ -38,14 +41,19 @@ void *worker(void *arg)
     printf("Thread-%d waiting for semaphore...\n", id);
 
     // Allow only two threads at a time
-    sem_wait(&semaphore);
-
     printf("Thread-%d entered semaphore.\n", id);
 
+   // Deadlock Prevention
+    pthread_mutex_lock(&resource1);
+    printf("Thread-%d acquired Resource 1\n", id);
+
+    pthread_mutex_lock(&resource2);
+    printf("Thread-%d acquired Resource 2\n", id); 
     // Keep executing until all processes are finished
     while (1)
     {
         pthread_mutex_lock(&mutex);
+
 
         // Stop when all processes have been executed
         if (current_process >= NUM_PROCESSES)
@@ -69,13 +77,24 @@ void *worker(void *arg)
 
         printf("Thread-%d leaving critical section.\n", id);
 
+        pthread_mutex_unlock(&resource2);
+        printf("Thread-%d released Resource 2\n", id);
+
+        pthread_mutex_unlock(&resource1);
+        printf("Thread-%d released Resource 1\n", id);
         pthread_mutex_unlock(&mutex);
 
-        // Simulate the time quantum
+        
         sleep(1);
     }
 
     printf("Thread-%d leaving semaphore.\n", id);
+
+    pthread_mutex_unlock(&resource2);
+    pthread_mutex_unlock(&resource1);
+
+    printf("Thread-%d released Resource 2\n", id);
+    printf("Thread-%d released Resource 1\n", id); 
 
     sem_post(&semaphore);
 
@@ -88,6 +107,10 @@ int main()
     createProcesses();
 
     pthread_mutex_init(&mutex, NULL);
+
+    pthread_mutex_init(&resource1, NULL);
+    pthread_mutex_init(&resource2, NULL);
+
     sem_init(&semaphore, 0, 2);
 
     pthread_t threads[NUM_THREADS];
@@ -119,6 +142,10 @@ int main()
         pthread_join(threads[i], NULL);
     }
     pthread_mutex_destroy(&mutex);
+
+    pthread_mutex_destroy(&resource1);
+    pthread_mutex_destroy(&resource2);
+
     sem_destroy(&semaphore);
 
     return 0;
