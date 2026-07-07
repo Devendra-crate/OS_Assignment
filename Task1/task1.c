@@ -35,33 +35,48 @@ void *worker(void *arg)
     int id = *(int *)arg;
 
     printf("Thread-%d started.\n", id);
-
     printf("Thread-%d waiting for semaphore...\n", id);
 
-    // Acquire semaphore
+    // Allow only two threads at a time
     sem_wait(&semaphore);
 
     printf("Thread-%d entered semaphore.\n", id);
 
-    // Lock mutex
-    pthread_mutex_lock(&mutex);
+    // Keep executing until all processes are finished
+    while (1)
+    {
+        pthread_mutex_lock(&mutex);
 
-    printf("Thread-%d entered critical section.\n", id);
+        // Stop when all processes have been executed
+        if (current_process >= NUM_PROCESSES)
+        {
+            pthread_mutex_unlock(&mutex);
+            break;
+        }
 
-    counter++;
+        printf("Thread-%d entered critical section.\n", id);
 
-    printf("Counter = %d\n", counter);
+        counter++;
+        printf("Shared Counter = %d\n", counter);
 
-    sleep(1);
+        printf("Thread-%d is executing Process-%d\n",
+               id,
+               processes[current_process]);
 
-    printf("Thread-%d leaving critical section.\n", id);
+        current_process++;
 
-    // Unlock mutex
-    pthread_mutex_unlock(&mutex);
+        printf("Time Quantum Completed.\n");
+
+        printf("Thread-%d leaving critical section.\n", id);
+
+        pthread_mutex_unlock(&mutex);
+
+        // Simulate the time quantum
+        sleep(1);
+    }
 
     printf("Thread-%d leaving semaphore.\n", id);
 
-    // Release semaphore
     sem_post(&semaphore);
 
     pthread_exit(NULL);
