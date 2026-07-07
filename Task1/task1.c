@@ -36,6 +36,22 @@ void *worker(void *arg)
 
     printf("Thread-%d started.\n", id);
 
+    // Lock the shared resource
+    pthread_mutex_lock(&mutex);
+
+    printf("Thread-%d entered critical section.\n", id);
+
+    counter++;
+
+    printf("Counter = %d\n", counter);
+
+    sleep(1);
+
+    printf("Thread-%d leaving critical section.\n", id);
+
+    // Unlock the shared resource
+    pthread_mutex_unlock(&mutex);
+
     pthread_exit(NULL);
 }
 
@@ -43,6 +59,8 @@ void *worker(void *arg)
 int main()
 {
     createProcesses();
+
+    pthread_mutex_init(&mutex, NULL);
 
     pthread_t threads[NUM_THREADS];
     int ids[NUM_THREADS];
@@ -72,5 +90,6 @@ int main()
     {
         pthread_join(threads[i], NULL);
     }
+    pthread_mutex_destroy(&mutex);
     return 0;
 }
