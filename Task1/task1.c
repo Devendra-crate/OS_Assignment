@@ -36,7 +36,14 @@ void *worker(void *arg)
 
     printf("Thread-%d started.\n", id);
 
-    // Lock the shared resource
+    printf("Thread-%d waiting for semaphore...\n", id);
+
+    // Acquire semaphore
+    sem_wait(&semaphore);
+
+    printf("Thread-%d entered semaphore.\n", id);
+
+    // Lock mutex
     pthread_mutex_lock(&mutex);
 
     printf("Thread-%d entered critical section.\n", id);
@@ -49,8 +56,13 @@ void *worker(void *arg)
 
     printf("Thread-%d leaving critical section.\n", id);
 
-    // Unlock the shared resource
+    // Unlock mutex
     pthread_mutex_unlock(&mutex);
+
+    printf("Thread-%d leaving semaphore.\n", id);
+
+    // Release semaphore
+    sem_post(&semaphore);
 
     pthread_exit(NULL);
 }
@@ -61,6 +73,7 @@ int main()
     createProcesses();
 
     pthread_mutex_init(&mutex, NULL);
+    sem_init(&semaphore, 0, 2);
 
     pthread_t threads[NUM_THREADS];
     int ids[NUM_THREADS];
@@ -91,5 +104,7 @@ int main()
         pthread_join(threads[i], NULL);
     }
     pthread_mutex_destroy(&mutex);
+    sem_destroy(&semaphore);
+
     return 0;
 }
