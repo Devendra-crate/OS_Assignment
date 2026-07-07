@@ -1,3 +1,21 @@
+/*
+
+Task 1: Process Management and Threading
+
+Features Implemented:
+1. Process Creation
+2. Multithreading (5 Threads)
+3. Mutex Synchronization
+4. Semaphore Synchronization
+5. Round Robin Scheduling Simulation
+6. Deadlock Prevention
+
+Author: Devendra Chhetri
+
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -12,14 +30,13 @@ int counter = 0;
 
 // Mutex Lock
 pthread_mutex_t mutex;
-
 pthread_mutex_t resource1;
 pthread_mutex_t resource2;
 
 // Semaphore
 sem_t semaphore;
 
-// Processes
+// Process Scheduler
 int processes[NUM_PROCESSES];
 int current_process = 0;
 
@@ -32,7 +49,11 @@ void createProcesses()
     }
 }
 
+//
 // Worker Thread Function
+// Each thread executes processes concurrently while
+// using mutexes and semaphores for synchronization.
+//
 void *worker(void *arg)
 {
     int id = *(int *)arg;
@@ -101,6 +122,11 @@ void *worker(void *arg)
     pthread_exit(NULL);
 }
 
+//
+// Main Function
+// Initializes synchronization mechanisms,
+// creates processes and worker threads,waits for execution to complete,
+// and cleans up allocated resources.
 
 int main()
 {
@@ -131,18 +157,22 @@ int main()
     {
         ids[i] = i + 1;
 
-        pthread_create(&threads[i],
-                       NULL,
-                       worker,
-                       &ids[i]);
+        if (pthread_create(&threads[i], NULL, worker, &ids[i]) != 0)
+        {
+            printf("Error creating thread %d\n", i + 1);
+        }
     }
 
     for (int i = 0; i < NUM_THREADS; i++)
     {
         pthread_join(threads[i], NULL);
     }
-    pthread_mutex_destroy(&mutex);
 
+    printf("\n");
+    printf("All Processes Executed Successfully\n");
+    printf("Final Shared Counter = %d\n", counter);
+
+    pthread_mutex_destroy(&mutex);
     pthread_mutex_destroy(&resource1);
     pthread_mutex_destroy(&resource2);
 
