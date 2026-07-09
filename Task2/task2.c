@@ -54,6 +54,8 @@ int main()
     printf("Frames    : %d\n", frameCount);
     printf("References: %d\n", n);
 
+    FIFO(pages, n, frameCount);
+
     return 0;
 }
 
@@ -73,10 +75,46 @@ void displayFrames(int frames[], int frameCount)
     printf("\n");
 }
 
-// FIFO Page Replacement
+// ------------------- FIFO -------------------
 void FIFO(int pages[], int n, int frameCount)
 {
-    printf("\nFIFO Algorithm will be implemented in the next commit.\n");
+    int frames[MAX_FRAMES];
+    int faults = 0;
+    int hits = 0;
+    int index = 0;
+
+    for (int i = 0; i < frameCount; i++)
+        frames[i] = -1;
+
+    printf("\n========== FIFO ==========\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        int found = 0;
+
+        for (int j = 0; j < frameCount; j++)
+        {
+            if (frames[j] == pages[i])
+            {
+                found = 1;
+                hits++;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            frames[index] = pages[i];
+            index = (index + 1) % frameCount;
+            faults++;
+        }
+
+        printf("Page %d -> ", pages[i]);
+        displayFrames(frames, frameCount);
+    }
+
+    printf("\nPage Faults = %d\n", faults);
+    printf("Page Hits = %d\n", hits);
 }
 
 // LRU Page Replacement
