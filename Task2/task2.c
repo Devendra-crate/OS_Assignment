@@ -55,6 +55,7 @@ int main()
     printf("References: %d\n", n);
 
     FIFO(pages, n, frameCount);
+    LRU(pages, n, frameCount);
 
     return 0;
 }
@@ -117,8 +118,77 @@ void FIFO(int pages[], int n, int frameCount)
     printf("Page Hits = %d\n", hits);
 }
 
-// LRU Page Replacement
+// ------------------- LRU -------------------
 void LRU(int pages[], int n, int frameCount)
 {
-    printf("\nLRU Algorithm will be implemented in the next commit.\n");
+    int frames[MAX_FRAMES];
+    int recent[MAX_FRAMES];
+
+    int faults = 0;
+    int hits = 0;
+
+    for (int i = 0; i < frameCount; i++)
+    {
+        frames[i] = -1;
+        recent[i] = -1;
+    }
+
+    printf("\n========== LRU ==========\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        int found = 0;
+
+        for (int j = 0; j < frameCount; j++)
+        {
+            if (frames[j] == pages[i])
+            {
+                found = 1;
+                hits++;
+                recent[j] = i;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            int empty = -1;
+
+            for (int j = 0; j < frameCount; j++)
+            {
+                if (frames[j] == -1)
+                {
+                    empty = j;
+                    break;
+                }
+            }
+
+            if (empty != -1)
+            {
+                frames[empty] = pages[i];
+                recent[empty] = i;
+            }
+            else
+            {
+                int lru = 0;
+
+                for (int j = 1; j < frameCount; j++)
+                {
+                    if (recent[j] < recent[lru])
+                        lru = j;
+                }
+
+                frames[lru] = pages[i];
+                recent[lru] = i;
+            }
+
+            faults++;
+        }
+
+        printf("Page %d -> ", pages[i]);
+        displayFrames(frames, frameCount);
+    }
+
+    printf("\nPage Faults = %d\n", faults);
+    printf("Page Hits = %d\n", hits);
 }
