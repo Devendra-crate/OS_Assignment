@@ -119,6 +119,12 @@ void FIFO(int pages[], int n, int frameCount)
     printf("Total Page References : %d\n", n);
     printf("Page Faults           : %d\n", faults);
     printf("Page Hits             : %d\n", hits);
+
+    float hitRatio = (float)hits / n;
+    float missRatio = (float)faults / n;
+
+    printf("Hit Ratio             : %.2f\n", hitRatio);
+    printf("Miss Ratio            : %.2f\n", missRatio);
 }
 
 // ------------------- LRU -------------------
@@ -197,4 +203,10 @@ void LRU(int pages[], int n, int frameCount)
     printf("Total Page References : %d\n", n);
     printf("Page Faults           : %d\n", faults);
     printf("Page Hits             : %d\n", hits);
+
+   float hitRatio = (float)hits / n;
+   float missRatio = (float)faults / n;
+
+   printf("Hit Ratio             : %.2f\n", hitRatio);
+   printf("Miss Ratio            : %.2f\n", missRatio);
 }
