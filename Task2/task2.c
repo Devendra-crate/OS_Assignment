@@ -54,7 +54,15 @@ int main()
     printf("Frames    : %d\n", frameCount);
     printf("References: %d\n", n);
 
+    printf("\n");
+    printf("FIFO Page Replacement Simulation\n");
+    printf("\n");
+
     FIFO(pages, n, frameCount);
+
+    printf("\n");
+    printf("LRU Page Replacement Simulation\n");
+
     LRU(pages, n, frameCount);
 
     return 0;
@@ -110,7 +118,8 @@ void FIFO(int pages[], int n, int frameCount)
             faults++;
         }
 
-        printf("Page %d -> ", pages[i]);
+        printf("\nProcessing Page %d\n", pages[i]);
+        printf("Memory Status -> ");
         displayFrames(frames, frameCount);
     }
 
@@ -194,7 +203,8 @@ void LRU(int pages[], int n, int frameCount)
             faults++;
         }
 
-        printf("Page %d -> ", pages[i]);
+        printf("\nProcessing Page %d\n", pages[i]);
+        printf("Memory Status -> ");
         displayFrames(frames, frameCount);
     }
 
