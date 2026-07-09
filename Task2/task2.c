@@ -21,9 +21,38 @@ Features:
 // Display the current contents of memory frames
 void displayFrames(int frames[], int frameCount);
 
+void FIFO(int pages[], int n, int frameCount);
+void LRU(int pages[], int n, int frameCount);
+
 int main()
 {
-    printf("Memory Management Simulation\n");
+    int pageSize;
+    int frameCount;
+    int n;
+
+    printf("Enter Page Size (KB): ");
+    scanf("%d", &pageSize);
+
+    printf("Enter Number of Frames: ");
+    scanf("%d", &frameCount);
+
+    printf("Enter Number of Page References: ");
+    scanf("%d", &n);
+
+    int pages[MAX_PAGES];
+
+    printf("Enter Page Reference String:\n");
+
+    for (int i = 0; i < n; i++)
+    {
+        scanf("%d", &pages[i]);
+    }
+
+    printf("\nMemory Configuration\n");
+    printf("--------------------\n");
+    printf("Page Size : %d KB\n", pageSize);
+    printf("Frames    : %d\n", frameCount);
+    printf("References: %d\n", n);
 
     return 0;
 }
@@ -42,4 +71,16 @@ void displayFrames(int frames[], int frameCount)
     }
 
     printf("\n");
+}
+
+// FIFO Page Replacement
+void FIFO(int pages[], int n, int frameCount)
+{
+    printf("\nFIFO Algorithm will be implemented in the next commit.\n");
+}
+
+// LRU Page Replacement
+void LRU(int pages[], int n, int frameCount)
+{
+    printf("\nLRU Algorithm will be implemented in the next commit.\n");
 }
