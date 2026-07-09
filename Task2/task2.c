@@ -114,8 +114,11 @@ void FIFO(int pages[], int n, int frameCount)
         displayFrames(frames, frameCount);
     }
 
-    printf("\nPage Faults = %d\n", faults);
-    printf("Page Hits = %d\n", hits);
+    printf("\nFIFO Summary\n");
+    printf("--------------------\n");
+    printf("Total Page References : %d\n", n);
+    printf("Page Faults           : %d\n", faults);
+    printf("Page Hits             : %d\n", hits);
 }
 
 // ------------------- LRU -------------------
@@ -189,6 +192,9 @@ void LRU(int pages[], int n, int frameCount)
         displayFrames(frames, frameCount);
     }
 
-    printf("\nPage Faults = %d\n", faults);
-    printf("Page Hits = %d\n", hits);
+    printf("\nLRU Summary\n");
+    printf("--------------------\n");
+    printf("Total Page References : %d\n", n);
+    printf("Page Faults           : %d\n", faults);
+    printf("Page Hits             : %d\n", hits);
 }
