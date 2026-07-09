@@ -1,14 +1,16 @@
 /*
 ----------------------------------------------------
 Task 2: Memory Management Simulation
-Course: Operating Systems
 
-Features:
-1. Paging System
-2. FIFO Page Replacement
-3. LRU Page Replacement
-4. Page Fault Tracking
+Features Implemented:
+1. Paging System with Configurable Page Size
+2. FIFO Page Replacement Algorithm
+3. LRU Page Replacement Algorithm
+4. Page Fault and Page Hit Tracking
 5. Hit/Miss Ratio Calculation
+6. Memory Frame Visualization
+
+Author: Devendra Chhetri
 ----------------------------------------------------
 */
 
@@ -65,10 +67,14 @@ int main()
 
     LRU(pages, n, frameCount);
 
+    printf("\n");
+    printf("Memory Management Simulation Completed Successfully\n");
+    
     return 0;
 }
 
 // Display Memory Frames
+// Shows the current allocation of pages in memory.
 void displayFrames(int frames[], int frameCount)
 {
     printf("Frames: ");
@@ -84,19 +90,25 @@ void displayFrames(int frames[], int frameCount)
     printf("\n");
 }
 
-// ------------------- FIFO -------------------
+
+// FIFO Page Replacement Algorithm
+// Replaces the oldest page currently in memory.
+
 void FIFO(int pages[], int n, int frameCount)
 {
     int frames[MAX_FRAMES];
     int faults = 0;
     int hits = 0;
     int index = 0;
+   
+    // Initialize all memory frames as empty
 
     for (int i = 0; i < frameCount; i++)
         frames[i] = -1;
 
     printf("\n========== FIFO ==========\n");
-
+   
+   // Process each page reference
     for (int i = 0; i < n; i++)
     {
         int found = 0;
@@ -111,6 +123,7 @@ void FIFO(int pages[], int n, int frameCount)
             }
         }
 
+      // Process each page reference
         if (!found)
         {
             frames[index] = pages[i];
@@ -136,7 +149,9 @@ void FIFO(int pages[], int n, int frameCount)
     printf("Miss Ratio            : %.2f\n", missRatio);
 }
 
-// ------------------- LRU -------------------
+//LRU Page Replacement Algorithm
+//Replaces the least recently used page.
+
 void LRU(int pages[], int n, int frameCount)
 {
     int frames[MAX_FRAMES];
@@ -145,6 +160,7 @@ void LRU(int pages[], int n, int frameCount)
     int faults = 0;
     int hits = 0;
 
+    // Initialize memory frames and usage history
     for (int i = 0; i < frameCount; i++)
     {
         frames[i] = -1;
@@ -168,6 +184,7 @@ void LRU(int pages[], int n, int frameCount)
             }
         }
 
+       // Find an empty frame or replace the least recently used page
         if (!found)
         {
             int empty = -1;
