@@ -40,6 +40,7 @@ int login();
 void createFile();
 void writeFile();
 void readFile();
+void deleteFile();
 int main();
 
 // --------------------------------------------------
@@ -204,6 +205,34 @@ void readFile()
 }
 
 // --------------------------------------------------
+// Delete File
+// Removes the selected file from the system.
+// If the file exists, it is permanently deleted.
+// Otherwise an error message is displayed.
+// --------------------------------------------------
+void deleteFile()
+{
+    char filename[100];
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    // Attempt to delete the file
+    if (remove(filename) == 0)
+    {
+        printf("File deleted successfully.\n");
+
+        // Record this action
+        logAction("File Deleted");
+    }
+    else
+    {
+        printf("Unable to delete file.\n");
+    }
+}
+
+
+// --------------------------------------------------
 // Main Function
 // Starts the Secure File Management System.
 // --------------------------------------------------
@@ -223,6 +252,8 @@ int main()
     writeFile();
 
     readFile();
+
+    deleteFile();
 
     return 0;
 }
