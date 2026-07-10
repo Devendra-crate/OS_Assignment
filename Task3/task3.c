@@ -41,6 +41,7 @@ void createFile();
 void writeFile();
 void readFile();
 void deleteFile();
+void setPermission();
 int main();
 
 // --------------------------------------------------
@@ -233,6 +234,36 @@ void deleteFile()
 
 
 // --------------------------------------------------
+// File Permission Management
+// Changes the file permission to 755
+// Owner  : Read, Write, Execute
+// Group  : Read and Execute
+// Others : Read and Execute
+// --------------------------------------------------
+void setPermission()
+{
+    char filename[100];
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    // Change permission to rwxr-xr-x
+    if (chmod(filename, 0755) == 0)
+    {
+        printf("File permissions changed successfully.\n");
+        printf("New Permission : 755 (rwxr-xr-x)\n");
+
+        // Record permission change
+        logAction("Permissions Changed");
+    }
+    else
+    {
+        printf("Unable to change permissions.\n");
+    }
+}
+
+
+// --------------------------------------------------
 // Main Function
 // Starts the Secure File Management System.
 // --------------------------------------------------
@@ -252,6 +283,8 @@ int main()
     writeFile();
 
     readFile();
+
+    setPermission();
 
     deleteFile();
 
