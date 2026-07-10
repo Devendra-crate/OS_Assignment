@@ -38,6 +38,8 @@ Author : Devendra Chhetri
 void logAction(char action[]);
 int login();
 void createFile();
+void writeFile();
+void readFile();
 int main();
 
 // --------------------------------------------------
@@ -128,6 +130,80 @@ void createFile()
 }
 
 // --------------------------------------------------
+// Write File
+// Opens an existing file in append mode and allows
+// the user to enter text. The entered text is stored
+// at the end of the file.
+// --------------------------------------------------
+void writeFile()
+{
+    char filename[100];
+    char text[500];
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    getchar();
+
+    printf("Enter Text: ");
+    fgets(text, sizeof(text), stdin);
+
+    FILE *fp = fopen(filename, "a");
+
+    if (fp == NULL)
+    {
+        printf("Unable to open file.\n");
+        return;
+    }
+
+    fprintf(fp, "%s", text);
+
+    fclose(fp);
+
+    printf("Data written successfully.\n");
+
+    // Record the modification
+    logAction("File Modified");
+}
+
+
+// --------------------------------------------------
+// Read File
+// Opens the selected file in read mode and displays
+// its contents on the screen.
+// --------------------------------------------------
+void readFile()
+{
+    char filename[100];
+    char ch;
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    FILE *fp = fopen(filename, "r");
+
+    if (fp == NULL)
+    {
+        printf("File not found.\n");
+        return;
+    }
+
+    printf("\n========== File Content ==========\n");
+
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        printf("%c", ch);
+    }
+
+    fclose(fp);
+
+    printf("\n==================================\n");
+
+    // Record file access
+    logAction("File Read");
+}
+
+// --------------------------------------------------
 // Main Function
 // Starts the Secure File Management System.
 // --------------------------------------------------
@@ -143,6 +219,10 @@ int main()
     printf("\nAuthentication Completed Successfully.\n");
 
     createFile();
+
+    writeFile();
+
+    readFile();
 
     return 0;
 }
