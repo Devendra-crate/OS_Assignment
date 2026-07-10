@@ -42,6 +42,8 @@ void writeFile();
 void readFile();
 void deleteFile();
 void setPermission();
+void encryptFile();
+void decryptFile();
 int main();
 
 // --------------------------------------------------
@@ -264,6 +266,102 @@ void setPermission()
 
 
 // --------------------------------------------------
+// File Encryption
+// Encrypts the contents of the selected file using
+// a simple Caesar Cipher (+3).
+// Each character is shifted three positions forward.
+// --------------------------------------------------
+void encryptFile()
+{
+    char filename[100];
+    char ch;
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    FILE *fp = fopen(filename, "r");
+    FILE *temp = fopen("temp.txt", "w");
+
+    if (fp == NULL)
+    {
+        printf("File not found.\n");
+
+        if (temp != NULL)
+            fclose(temp);
+
+        return;
+    }
+
+    // Encrypt each character
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        fputc(ch + 3, temp);
+    }
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(filename);
+    rename("temp.txt", filename);
+
+    printf("File encrypted successfully.\n");
+
+    // Record encryption
+    logAction("File decrypted successfully.\n");
+}
+
+// --------------------------------------------------
+// File Decryption
+// Restores the original file contents by shifting
+// every encrypted character three positions back.
+// ---------------------------------------- 
+
+// --------------------------------------------------
+// File Decryption
+// Restores the original file contents by shifting
+// every encrypted character three positions back.
+// --------------------------------------------------
+void decryptFile()
+{
+    char filename[100];
+    char ch;
+
+    printf("\nEnter Filename: ");
+    scanf("%99s", filename);
+
+    FILE *fp = fopen(filename, "r");
+    FILE *temp = fopen("temp.txt", "w");
+
+    if (fp == NULL)
+    {
+        printf("File not found.\n");
+
+        if (temp != NULL)
+            fclose(temp);
+
+        return;
+    }
+
+    // Decrypt each character
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        fputc(ch - 3, temp);
+    }
+
+    fclose(fp);
+    fclose(temp);
+
+    remove(filename);
+    rename("temp.txt", filename);
+
+    printf("File decrypted successfully.\n");
+
+    // Record decryption
+    logAction("File Decrypted");
+}
+
+
+// --------------------------------------------------
 // Main Function
 // Starts the Secure File Management System.
 // --------------------------------------------------
@@ -285,6 +383,10 @@ int main()
     readFile();
 
     setPermission();
+
+    encryptFile();
+
+    decryptFile();
 
     deleteFile();
 
