@@ -1,17 +1,20 @@
 /*
-----------------------------------------------------------
+==========================================================
 Task 3 : Secure File Management System
-Course : Operating Systems
 
-This program demonstrates:
-1. User Authentication
-2. File Operations
-3. File Permissions
-4. Encryption and Decryption
-5. Audit Logging
+Features Implemented:
+- User Authentication
+- Audit Logging
+- File Creation
+- File Reading
+- File Writing
+- File Deletion
+- File Permission Management
+- File Encryption
+- File Decryption
 
 Author : Devendra Chhetri
-----------------------------------------------------------
+==========================================================
 */
 
 #include <stdio.h>
@@ -72,6 +75,11 @@ void logAction(char action[])
 }
 
 
+// --------------------------------------------------
+// User Authentication
+// Allows only authorized users
+// to access the file system.
+// --------------------------------------------------
 int login()
 {
     char username[50];
@@ -105,9 +113,8 @@ int login()
 
 // --------------------------------------------------
 // Create File
-// Creates a new empty file specified by the user.
-// If the file already exists, it will simply be
-// opened and closed.
+// Creates a new empty file using the filename
+// entered by the authenticated user.
 // --------------------------------------------------
 void createFile()
 {
@@ -135,9 +142,8 @@ void createFile()
 
 // --------------------------------------------------
 // Write File
-// Opens an existing file in append mode and allows
-// the user to enter text. The entered text is stored
-// at the end of the file.
+// Opens a file in append mode and stores
+// user input without deleting previous data.
 // --------------------------------------------------
 void writeFile()
 {
@@ -173,8 +179,8 @@ void writeFile()
 
 // --------------------------------------------------
 // Read File
-// Opens the selected file in read mode and displays
-// its contents on the screen.
+// Displays the complete contents of
+// the selected file.
 // --------------------------------------------------
 void readFile()
 {
@@ -209,9 +215,8 @@ void readFile()
 
 // --------------------------------------------------
 // Delete File
-// Removes the selected file from the system.
-// If the file exists, it is permanently deleted.
-// Otherwise an error message is displayed.
+// Permanently removes the selected file
+// from the system.
 // --------------------------------------------------
 void deleteFile()
 {
@@ -267,9 +272,8 @@ void setPermission()
 
 // --------------------------------------------------
 // File Encryption
-// Encrypts the contents of the selected file using
-// a simple Caesar Cipher (+3).
-// Each character is shifted three positions forward.
+// Encrypts every character using
+// Caesar Cipher (+3).
 // --------------------------------------------------
 void encryptFile()
 {
@@ -312,14 +316,8 @@ void encryptFile()
 
 // --------------------------------------------------
 // File Decryption
-// Restores the original file contents by shifting
-// every encrypted character three positions back.
-// ---------------------------------------- 
-
-// --------------------------------------------------
-// File Decryption
-// Restores the original file contents by shifting
-// every encrypted character three positions back.
+// Restores the original file by
+// reversing the Caesar Cipher (-3).
 // --------------------------------------------------
 void decryptFile()
 {
@@ -424,8 +422,9 @@ int main()
                 break;
 
             case 8:
-                printf("\nExiting Program...\n");
-                break;
+            printf("\nThank you for using the Secure File Management System.\n");
+            printf("Program terminated successfully.\n");
+            break;
 
             default:
                 printf("\nInvalid Choice!\n");
