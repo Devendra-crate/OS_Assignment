@@ -33,6 +33,38 @@ Author : Devendra Chhetri
 // Checks whether the entered username and password
 // match the predefined administrator credentials.
 // --------------------------------------------------
+
+// Function Prototypes
+void logAction(char action[]);
+int login();
+int main();
+
+// --------------------------------------------------
+// Audit Logging
+// Records important system events such as successful
+// login, file creation, deletion and modifications.
+// Every action is stored in "audit.log" with the
+// current date and time.
+// --------------------------------------------------
+void logAction(char action[])
+{
+    FILE *log = fopen("audit.log", "a");
+
+    if (log == NULL)
+    {
+        printf("Unable to open audit log.\n");
+        return;
+    }
+
+    time_t t;
+    time(&t);
+
+    fprintf(log, "%s : %s", action, ctime(&t));
+
+    fclose(log);
+}
+
+
 int login()
 {
     char username[50];
@@ -48,10 +80,18 @@ int login()
         strcmp(password, PASSWORD) == 0)
     {
         printf("\nLogin Successful!\n");
-        return 1;
+
+// Record the successful login
+    logAction("User logged in");
+
+    return 1;
     }
 
     printf("\nInvalid Username or Password!\n");
+
+   // Record failed login attempt
+    logAction("Failed login attempt");
+
     return 0;
 }
 
