@@ -37,6 +37,7 @@ Author : Devendra Chhetri
 // Function Prototypes
 void logAction(char action[]);
 int login();
+void createFile();
 int main();
 
 // --------------------------------------------------
@@ -97,6 +98,36 @@ int login()
 
 
 // --------------------------------------------------
+// Create File
+// Creates a new empty file specified by the user.
+// If the file already exists, it will simply be
+// opened and closed.
+// --------------------------------------------------
+void createFile()
+{
+    char filename[100];
+
+    printf("\nEnter Filename to create file : ");
+    scanf("%99s", filename);
+
+    // Open file in write mode
+    FILE *fp = fopen(filename, "w");
+
+    if (fp == NULL)
+    {
+        printf("Unable to create file.\n");
+        return;
+    }
+
+    fclose(fp);
+
+    printf("File created successfully.\n");
+
+    // Record this action
+    logAction("File Created");
+}
+
+// --------------------------------------------------
 // Main Function
 // Starts the Secure File Management System.
 // --------------------------------------------------
@@ -110,6 +141,8 @@ int main()
         return 0;
 
     printf("\nAuthentication Completed Successfully.\n");
+
+    createFile();
 
     return 0;
 }
