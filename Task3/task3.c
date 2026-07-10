@@ -363,32 +363,75 @@ void decryptFile()
 
 // --------------------------------------------------
 // Main Function
-// Starts the Secure File Management System.
+// Displays a menu and allows the user to perform
+// different file operations until Exit is selected.
 // --------------------------------------------------
 int main()
 {
-    printf("========================================\n");
-    printf(" Secure File Management System\n");
-    printf("========================================\n\n");
+    int choice;
 
+    // User authentication
     if (!login())
         return 0;
 
-    printf("\nAuthentication Completed Successfully.\n");
+    do
+    {
+        printf("\n");
+        printf("=========================================\n");
+        printf("   Secure File Management System\n");
+        printf("=========================================\n");
 
-    createFile();
+        printf("1. Create File\n");
+        printf("2. Write File\n");
+        printf("3. Read File\n");
+        printf("4. Delete File\n");
+        printf("5. Set Permissions\n");
+        printf("6. Encrypt File\n");
+        printf("7. Decrypt File\n");
+        printf("8. Exit\n");
 
-    writeFile();
+        printf("\nEnter Choice: ");
+        scanf("%d", &choice);
 
-    readFile();
+        switch (choice)
+        {
+            case 1:
+                createFile();
+                break;
 
-    setPermission();
+            case 2:
+                writeFile();
+                break;
 
-    encryptFile();
+            case 3:
+                readFile();
+                break;
 
-    decryptFile();
+            case 4:
+                deleteFile();
+                break;
 
-    deleteFile();
+            case 5:
+                setPermission();
+                break;
+
+            case 6:
+                encryptFile();
+                break;
+
+            case 7:
+                decryptFile();
+                break;
+
+            case 8:
+                printf("\nExiting Program...\n");
+                break;
+
+            default:
+                printf("\nInvalid Choice!\n");
+        }
+
+    } while (choice != 8);
 
     return 0;
 }
