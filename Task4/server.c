@@ -37,7 +37,8 @@ int main()
 
     int serverSocket;
     struct sockaddr_in serverAddress;
-
+    int clientSocket;
+    socklen_t addressLength = sizeof(serverAddress);
 
     // --------------------------------------------------
     // Create Server Socket
@@ -95,7 +96,26 @@ int main()
 
     printf("Server is listening for client connections...\n");
 
-    
+    // --------------------------------------------------
+    // Wait for a Client Connection
+    // --------------------------------------------------
+    clientSocket = accept(serverSocket,
+                      (struct sockaddr *)&serverAddress,
+                      &addressLength);
+
+    if (clientSocket < 0)
+    {
+       printf("Client connection failed.\n");
+
+       close(serverSocket);
+
+       return 1;
+    }
+
+    printf("Client connected successfully!\n");
+
+    // Close sockets
+    close(clientSocket);
     close(serverSocket);
 
     return 0;
