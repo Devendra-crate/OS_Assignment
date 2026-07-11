@@ -35,6 +35,7 @@ int main()
     int clientSocket;
 
     struct sockaddr_in serverAddress;
+    char buffer[BUFFER_SIZE];
 
     // Create socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -66,6 +67,17 @@ int main()
 
     printf("Connected to server successfully!\n");
 
+     
+     // Enter a Message
+     
+    printf("Enter message: ");
+    fgets(buffer, BUFFER_SIZE, stdin);
+
+    
+    // Send Message to Server
+    send(clientSocket, buffer, strlen(buffer), 0);
+
+    printf("Message sent successfully.\n");
     close(clientSocket);
 
     return 0;

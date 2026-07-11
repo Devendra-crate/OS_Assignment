@@ -39,7 +39,7 @@ int main()
     struct sockaddr_in serverAddress;
     int clientSocket;
     socklen_t addressLength = sizeof(serverAddress);
-
+    char buffer[BUFFER_SIZE];
     // --------------------------------------------------
     // Create Server Socket
     // AF_INET  : IPv4
@@ -113,6 +113,20 @@ int main()
     }
 
     printf("Client connected successfully!\n");
+
+    int bytesReceived;
+
+
+    // Receive Message from Clien
+    bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
+
+    if (bytesReceived > 0)
+    {
+       buffer[bytesReceived] = '\0';
+
+       printf("\nMessage received from client:\n");
+       printf("%s", buffer);
+    }
 
     // Close sockets
     close(clientSocket);
