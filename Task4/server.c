@@ -24,6 +24,8 @@ Author : Devendra Chhetri
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
+#define USERNAME "Devendra"
+#define PASSWORD "password123"
 #define MAX_CLIENTS 5
 
 // Function Prototypes
@@ -38,8 +40,11 @@ int main()
     int serverSocket;
     struct sockaddr_in serverAddress;
     int clientSocket;
+    int bytesReceived;
     socklen_t addressLength = sizeof(serverAddress);
     char buffer[BUFFER_SIZE];
+    char username[50];
+    char password[50];
     // --------------------------------------------------
     // Create Server Socket
     // AF_INET  : IPv4
@@ -114,23 +119,54 @@ int main()
 
     printf("Client connected successfully!\n");
 
-    int bytesReceived;
+   
+   // Receive Username
+   recv(clientSocket, username, sizeof(username), 0);
 
 
-    // Receive Message from Clien
-    bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
+   // Receive Password
 
-    if (bytesReceived > 0)
-    {
-       buffer[bytesReceived] = '\0';
+   recv(clientSocket, password, sizeof(password), 0);
 
-       printf("\nMessage received from client:\n");
-       printf("%s", buffer);
-    }
+   printf("\nClient Authentication Request\n");
+   printf("Username : %s\n", username);
+   printf("Password : %s\n", password);
 
-    // Close sockets
-    close(clientSocket);
-    close(serverSocket);
+   // Validate Credentials
 
-    return 0;
+   if (strcmp(username, USERNAME) == 0 &&
+       strcmp(password, PASSWORD) == 0)
+   {
+        printf("\nAuthentication Successful!\n");
+   
+       // Receive Client Message
+
+       bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
+
+       if (bytesReceived > 0)
+       {
+           buffer[bytesReceived] = '\0';
+
+           printf("\nMessage received from client:\n");
+           printf("%s", buffer);
+       }
+
+   }
+   else
+   {
+      printf("\nAuthentication Failed!\n");
+
+      close(clientSocket);
+      close(serverSocket);
+
+      return 0;
+   }
+
+   // --------------------------------------------------
+   // Close Sockets
+   // --------------------------------------------------
+   close(clientSocket);
+   close(serverSocket);
+
+   return 0;
 }

@@ -36,7 +36,8 @@ int main()
 
     struct sockaddr_in serverAddress;
     char buffer[BUFFER_SIZE];
-
+    char username[50];
+    char password[50];
     // Create socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -67,7 +68,21 @@ int main()
 
     printf("Connected to server successfully!\n");
 
-     
+    // User Authentication
+     printf("Username: ");
+     scanf("%49s", username);
+
+     printf("Password: ");
+     scanf("%49s", password);
+
+     // Clear newline before fgets()
+     getchar();
+
+     // Send username
+     send(clientSocket, username, strlen(username) + 1, 0);
+
+     // Send password
+     send(clientSocket, password, strlen(password) + 1, 0);
      // Enter a Message
      
     printf("Enter message: ");
