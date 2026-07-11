@@ -21,8 +21,10 @@ Author : Devendra Chhetri
 #include <arpa/inet.h>
 #include <pthread.h>
 
+
 #define PORT 8080
 #define BUFFER_SIZE 1024
+#define MAX_CLIENTS 5
 
 // Function Prototypes
 int main();
@@ -33,7 +35,68 @@ int main()
     printf("      Server Application Started\n");
     printf("=====================================\n");
 
-    printf("Server initialization completed.\n");
+    int serverSocket;
+    struct sockaddr_in serverAddress;
+
+
+    // --------------------------------------------------
+    // Create Server Socket
+    // AF_INET  : IPv4
+    // SOCK_STREAM : TCP Protocol
+   // --------------------------------------------------
+    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (serverSocket < 0)
+    {
+      printf("Socket creation failed.\n");
+      return 1;
+    }
+
+    printf("Server socket created successfully.\n");
+
+
+    // --------------------------------------------------
+   // Configure Server Address
+   // --------------------------------------------------
+   serverAddress.sin_family = AF_INET;
+   serverAddress.sin_addr.s_addr = INADDR_ANY;
+   serverAddress.sin_port = htons(PORT);
+
+
+   // --------------------------------------------------
+   // Bind Socket
+   // Associates the socket with Port 8080.
+   // --------------------------------------------------
+   if (bind(serverSocket,
+         (struct sockaddr *)&serverAddress,
+          sizeof(serverAddress)) < 0)
+    {
+      printf("Binding failed.\n");
+
+      close(serverSocket);
+
+      return 1;
+    }
+
+    printf("Server bound to Port %d successfully.\n", PORT);
+
+
+    // --------------------------------------------------
+    // Listen for Client Connections
+    // --------------------------------------------------
+    if (listen(serverSocket, MAX_CLIENTS) < 0)
+    {
+       printf("Listening failed.\n");
+
+       close(serverSocket);
+
+       return 1;
+    }
+
+    printf("Server is listening for client connections...\n");
+
+    
+    close(serverSocket);
 
     return 0;
 }
