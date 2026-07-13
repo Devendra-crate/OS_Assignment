@@ -1,26 +1,8 @@
-/*
-=========================================================
-Task 4 : Network Programming and IPC
-Server Program
-
-Features to be implemented:
-1. Socket Creation
-2. Client Authentication
-3. Data Exchange
-4. Multiple Client Handling
-5. Error Handling
-
-Author : Devendra Chhetri
-=========================================================
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <pthread.h>
-
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
@@ -28,8 +10,11 @@ Author : Devendra Chhetri
 #define PASSWORD "password123"
 #define MAX_CLIENTS 5
 
-// Function Prototypes
-int main();
+typedef struct
+{
+    char username[50];
+    char password[50];
+} Login;
 
 int main()
 {
@@ -37,136 +22,104 @@ int main()
     printf("      Server Application Started\n");
     printf("=====================================\n");
 
-    int serverSocket;
+    int serverSocket, clientSocket;
     struct sockaddr_in serverAddress;
-    int clientSocket;
-    int bytesReceived;
     socklen_t addressLength = sizeof(serverAddress);
+
     char buffer[BUFFER_SIZE];
-    char username[50];
-    char password[50];
-    // --------------------------------------------------
-    // Create Server Socket
-    // AF_INET  : IPv4
-    // SOCK_STREAM : TCP Protocol
-   // --------------------------------------------------
+    Login login;
+    int bytesReceived;
+
+    // Create socket
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
     if (serverSocket < 0)
     {
-      printf("Socket creation failed.\n");
-      return 1;
+        printf("Socket creation failed.\n");
+        return 1;
     }
 
     printf("Server socket created successfully.\n");
 
+    // Configure server
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    serverAddress.sin_port = htons(PORT);
 
-    // --------------------------------------------------
-   // Configure Server Address
-   // --------------------------------------------------
-   serverAddress.sin_family = AF_INET;
-   serverAddress.sin_addr.s_addr = INADDR_ANY;
-   serverAddress.sin_port = htons(PORT);
-
-
-   // --------------------------------------------------
-   // Bind Socket
-   // Associates the socket with Port 8080.
-   // --------------------------------------------------
-   if (bind(serverSocket,
-         (struct sockaddr *)&serverAddress,
-          sizeof(serverAddress)) < 0)
+    // Bind
+    if (bind(serverSocket,
+             (struct sockaddr *)&serverAddress,
+             sizeof(serverAddress)) < 0)
     {
-      printf("Binding failed.\n");
-
-      close(serverSocket);
-
-      return 1;
+        printf("Binding failed.\n");
+        close(serverSocket);
+        return 1;
     }
 
     printf("Server bound to Port %d successfully.\n", PORT);
 
-
-    // --------------------------------------------------
-    // Listen for Client Connections
-    // --------------------------------------------------
+    // Listen
     if (listen(serverSocket, MAX_CLIENTS) < 0)
     {
-       printf("Listening failed.\n");
-
-       close(serverSocket);
-
-       return 1;
+        printf("Listening failed.\n");
+        close(serverSocket);
+        return 1;
     }
 
     printf("Server is listening for client connections...\n");
 
-    // --------------------------------------------------
-    // Wait for a Client Connection
-    // --------------------------------------------------
+    // Accept
     clientSocket = accept(serverSocket,
-                      (struct sockaddr *)&serverAddress,
-                      &addressLength);
+                          (struct sockaddr *)&serverAddress,
+                          &addressLength);
 
     if (clientSocket < 0)
     {
-       printf("Client connection failed.\n");
-
-       close(serverSocket);
-
-       return 1;
+        printf("Client connection failed.\n");
+        close(serverSocket);
+        return 1;
     }
 
     printf("Client connected successfully!\n");
 
-   
-   // Receive Username
-   recv(clientSocket, username, sizeof(username), 0);
+    // Receive Login
+    bytesReceived = recv(clientSocket, &login, sizeof(login), 0);
 
+    if (bytesReceived <= 0)
+    {
+        printf("Failed to receive login.\n");
+        close(clientSocket);
+        close(serverSocket);
+        return 1;
+    }
 
-   // Receive Password
+    printf("\nClient Authentication Request\n");
+    printf("Username : %s\n", login.username);
+    printf("Password : %s\n", login.password);
 
-   recv(clientSocket, password, sizeof(password), 0);
-
-   printf("\nClient Authentication Request\n");
-   printf("Username : %s\n", username);
-   printf("Password : %s\n", password);
-
-   // Validate Credentials
-
-   if (strcmp(username, USERNAME) == 0 &&
-       strcmp(password, PASSWORD) == 0)
-   {
+    // Authenticate
+    if (strcmp(login.username, USERNAME) == 0 &&
+        strcmp(login.password, PASSWORD) == 0)
+    {
         printf("\nAuthentication Successful!\n");
-   
-       // Receive Client Message
 
-       bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
+        bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
 
-       if (bytesReceived > 0)
-       {
-           buffer[bytesReceived] = '\0';
+        if (bytesReceived > 0)
+        {
+            buffer[bytesReceived] = '\0';
 
-           printf("\nMessage received from client:\n");
-           printf("%s", buffer);
-       }
+            printf("\nMessage received from client:\n");
+            printf("%s\n", buffer);
+        }
+    }
+    else
+    {
+        printf("\nAuthentication Failed!\n");
+    }
 
-   }
-   else
-   {
-      printf("\nAuthentication Failed!\n");
+    close(clientSocket);
+    close(serverSocket);
 
-      close(clientSocket);
-      close(serverSocket);
-
-      return 0;
-   }
-
-   // --------------------------------------------------
-   // Close Sockets
-   // --------------------------------------------------
-   close(clientSocket);
-   close(serverSocket);
-
-   return 0;
+    return 0;
 }

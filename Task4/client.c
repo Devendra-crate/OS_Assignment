@@ -1,19 +1,3 @@
-/*
-=========================================================
-Task 4 : Network Programming and IPC
-Client Program
-
-Features to be implemented:
-1. Connect to Server
-2. Authentication
-3. Send Messages
-4. Receive Messages
-5. Graceful Exit
-
-Author : Devendra Chhetri
-=========================================================
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,8 +7,11 @@ Author : Devendra Chhetri
 #define PORT 8080
 #define BUFFER_SIZE 1024
 
-// Function Prototypes
-int main();
+typedef struct
+{
+    char username[50];
+    char password[50];
+} Login;
 
 int main()
 {
@@ -35,9 +22,10 @@ int main()
     int clientSocket;
 
     struct sockaddr_in serverAddress;
+
     char buffer[BUFFER_SIZE];
-    char username[50];
-    char password[50];
+    Login login;
+
     // Create socket
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -49,50 +37,43 @@ int main()
 
     printf("Client socket created successfully.\n");
 
-    // Configure server address
+    // Configure server
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(PORT);
     serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    // Connect to server
+    // Connect
     if (connect(clientSocket,
                 (struct sockaddr *)&serverAddress,
                 sizeof(serverAddress)) < 0)
     {
         printf("Connection failed.\n");
-
         close(clientSocket);
-
         return 1;
     }
 
     printf("Connected to server successfully!\n");
 
-    // User Authentication
-     printf("Username: ");
-     scanf("%49s", username);
+    // Login
+    printf("Username: ");
+    scanf("%49s", login.username);
 
-     printf("Password: ");
-     scanf("%49s", password);
+    printf("Password: ");
+    scanf("%49s", login.password);
 
-     // Clear newline before fgets()
-     getchar();
+    getchar();
 
-     // Send username
-     send(clientSocket, username, strlen(username) + 1, 0);
+    // Send Login
+    send(clientSocket, &login, sizeof(login), 0);
 
-     // Send password
-     send(clientSocket, password, strlen(password) + 1, 0);
-     // Enter a Message
-     
+    // Send Message
     printf("Enter message: ");
     fgets(buffer, BUFFER_SIZE, stdin);
 
-    
-    // Send Message to Server
-    send(clientSocket, buffer, strlen(buffer), 0);
+    send(clientSocket, buffer, strlen(buffer) + 1, 0);
 
     printf("Message sent successfully.\n");
+
     close(clientSocket);
 
     return 0;
