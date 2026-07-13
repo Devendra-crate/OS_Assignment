@@ -83,7 +83,9 @@ int main()
    }
 
     printf("Message sent successfully.\n");
+    printf("Closing connection with server...\n");
 
+    shutdown(clientSocket, SHUT_RDWR);
     close(clientSocket);
 
     return 0;

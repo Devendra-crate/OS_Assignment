@@ -92,10 +92,17 @@ int main()
         pthread_t thread;
 
 
-        pthread_create(&thread,
-                   NULL,
-                   handleClient,
-                   (void *)&clientSocket);
+        if(pthread_create(&thread,
+                  NULL,
+                  handleClient,
+                  (void *)&clientSocket) != 0)
+        {
+           perror("Thread creation failed");
+
+           close(clientSocket);
+
+           continue;
+       }
 
 
         pthread_detach(thread);
@@ -180,11 +187,20 @@ void *handleClient(void *socket)
 
         if (bytesReceived > 0)
         {
-            buffer[bytesReceived] = '\0';
+           buffer[bytesReceived] = '\0';
 
-            printf("\nMessage received from client:\n");
-            printf("%s\n", buffer);
+           printf("\nMessage received from client:\n");
+           printf("%s\n", buffer);
         }
+        else if (bytesReceived == 0)
+        {
+           printf("\nClient disconnected.\n");
+        }
+        else
+        {
+           perror("Message receive failed");
+        }
+
 
     }
     else
@@ -192,6 +208,7 @@ void *handleClient(void *socket)
         printf("\nAuthentication Failed!\n");
     }
 
+    shutdown(clientSocket, SHUT_RDWR);
 
     close(clientSocket);
 
