@@ -31,7 +31,7 @@ int main()
 
     if (clientSocket < 0)
     {
-        printf("Socket creation failed.\n");
+        perror("Socket creation failed.\n");
         return 1;
     }
 
@@ -47,7 +47,7 @@ int main()
                 (struct sockaddr *)&serverAddress,
                 sizeof(serverAddress)) < 0)
     {
-        printf("Connection failed.\n");
+        perror("Connection failed.\n");
         close(clientSocket);
         return 1;
     }
@@ -64,13 +64,23 @@ int main()
     getchar();
 
     // Send Login
-    send(clientSocket, &login, sizeof(login), 0);
+    if(send(clientSocket, &login, sizeof(login), 0) < 0)
+    {
+       perror("Login send failed");
+       close(clientSocket);
+       return 1;
+    }
 
     // Send Message
     printf("Enter message: ");
     fgets(buffer, BUFFER_SIZE, stdin);
 
-    send(clientSocket, buffer, strlen(buffer) + 1, 0);
+    if(send(clientSocket, buffer, strlen(buffer)+1, 0) < 0)
+    {
+       perror("Message send failed");
+       close(clientSocket);
+       return 1;
+   }
 
     printf("Message sent successfully.\n");
 

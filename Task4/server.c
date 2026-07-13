@@ -38,7 +38,7 @@ int main()
 
     if (serverSocket < 0)
     {
-        printf("Socket creation failed.\n");
+        perror("Socket creation failed.\n");
         return 1;
     }
 
@@ -54,7 +54,7 @@ int main()
              (struct sockaddr *)&serverAddress,
              sizeof(serverAddress)) < 0)
     {
-        printf("Binding failed.\n");
+        perror("Binding failed.\n");
         close(serverSocket);
         return 1;
     }
@@ -64,7 +64,7 @@ int main()
     // Listen
     if (listen(serverSocket, MAX_CLIENTS) < 0)
     {
-        printf("Listening failed.\n");
+        perror("Listening failed.\n");
         close(serverSocket);
         return 1;
     }
@@ -140,11 +140,22 @@ void *handleClient(void *socket)
     // Receive Login Information
     bytesReceived = recv(clientSocket, &login, sizeof(login), 0);
 
-    if (bytesReceived <= 0)
+    if (bytesReceived == 0)
     {
-        printf("Failed to receive login information.\n");
-        close(clientSocket);
-        return NULL;
+       printf("Client disconnected before login.\n");
+
+       close(clientSocket);
+
+       return NULL;
+    }
+
+    if (bytesReceived < 0)
+    {
+       perror("Login receive failed");
+
+       close(clientSocket);
+
+       return NULL;
     }
 
 
