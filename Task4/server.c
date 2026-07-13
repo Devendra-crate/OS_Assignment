@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #define PORT 8080
 #define BUFFER_SIZE 1024
@@ -15,6 +16,8 @@ typedef struct
     char username[50];
     char password[50];
 } Login;
+// Function Prototype
+void *handleClient(void *socket);
 
 int main()
 {
@@ -69,33 +72,35 @@ int main()
     printf("Server is listening for client connections...\n");
 
     // Accept
-    clientSocket = accept(serverSocket,
+    while(1)
+    {
+        clientSocket = accept(serverSocket,
                           (struct sockaddr *)&serverAddress,
                           &addressLength);
 
-    if (clientSocket < 0)
-    {
-        printf("Client connection failed.\n");
-        close(serverSocket);
-        return 1;
+
+        if(clientSocket < 0)
+        {
+           printf("Client connection failed.\n");
+           continue;
+        }
+
+
+        printf("Client connected successfully!\n");
+
+
+        pthread_t thread;
+
+
+        pthread_create(&thread,
+                   NULL,
+                   handleClient,
+                   (void *)&clientSocket);
+
+
+        pthread_detach(thread);
     }
 
-    printf("Client connected successfully!\n");
-
-    // Receive Login
-    bytesReceived = recv(clientSocket, &login, sizeof(login), 0);
-
-    if (bytesReceived <= 0)
-    {
-        printf("Failed to receive login.\n");
-        close(clientSocket);
-        close(serverSocket);
-        return 1;
-    }
-
-    printf("\nClient Authentication Request\n");
-    printf("Username : %s\n", login.username);
-    printf("Password : %s\n", login.password);
 
     // Authenticate
     if (strcmp(login.username, USERNAME) == 0 &&
@@ -118,8 +123,66 @@ int main()
         printf("\nAuthentication Failed!\n");
     }
 
-    close(clientSocket);
     close(serverSocket);
 
     return 0;
+}
+
+void *handleClient(void *socket)
+{
+    int clientSocket = *(int *)socket;
+
+    char buffer[BUFFER_SIZE];
+    Login login;
+    int bytesReceived;
+
+
+    // Receive Login Information
+    bytesReceived = recv(clientSocket, &login, sizeof(login), 0);
+
+    if (bytesReceived <= 0)
+    {
+        printf("Failed to receive login information.\n");
+        close(clientSocket);
+        return NULL;
+    }
+
+
+    printf("\nClient Authentication Request\n");
+    printf("Username : %s\n", login.username);
+    printf("Password : %s\n", login.password);
+
+
+    // Validate Credentials
+
+    if (strcmp(login.username, USERNAME) == 0 &&
+        strcmp(login.password, PASSWORD) == 0)
+    {
+        printf("\nAuthentication Successful!\n");
+
+
+        bytesReceived = recv(clientSocket,
+                             buffer,
+                             BUFFER_SIZE - 1,
+                             0);
+
+
+        if (bytesReceived > 0)
+        {
+            buffer[bytesReceived] = '\0';
+
+            printf("\nMessage received from client:\n");
+            printf("%s\n", buffer);
+        }
+
+    }
+    else
+    {
+        printf("\nAuthentication Failed!\n");
+    }
+
+
+    close(clientSocket);
+
+    return NULL;
 }
